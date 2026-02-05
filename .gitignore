@@ -92,3 +92,4 @@ Thumbs.db
 nul
 
 .claude/
+*.code-workspace

@@ -32,3 +32,4 @@ npm run build
 `public/osm.geojson.gz`: 
 (c) OpenStreetMap contributors. 
 Open Database License (ODbL) v1.0.
+https://github.com/toruseo/osm-road-extractor-simplifier により生成
