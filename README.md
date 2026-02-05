@@ -4,6 +4,8 @@
 
 OSM道路データをWebGLで高速描画するビューア
 
+公開ページ：https://toruseo.jp/OSM-road-viewer/
+
 ## 機能
 - 道路種別（fclass）による色分け表示
 - 道路名ラベル表示（オン/オフ切替）
@@ -25,6 +27,8 @@ npm run dev
 npm run build
 ```
 
-## `osm.geojson`データクレジット・ライセンス
+## データクレジット・ライセンス
+
+`public/osm.geojson.gz`: 
 (c) OpenStreetMap contributors. 
 Open Database License (ODbL) v1.0.
