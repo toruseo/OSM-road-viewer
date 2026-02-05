@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSM-road-viewer</title>
+  <link href="https://unpkg.com/maplibre-gl@4.0.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    #progress-container {
+      margin-top: 0;
+    }
+
+    #progress-bar {
+      width: 200px;
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    #progress-fill {
+      width: 0%;
+      height: 100%;
+      background: #4285f4;
+      transition: width 0.1s ease;
+    }
+
+    #progress-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    #search-panel {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    #search-panel .search-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    #search-panel input[type="text"],
+    #search-panel select {
+      width: 120px;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    #search-panel .search-label {
+      font-size: 12px;
+      color: #666;
+      width: 60px;
+    }
+
+    #search-panel .search-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    #search-panel button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    #search-btn {
+      background: #4285f4;
+      color: white;
+    }
+
+    #search-btn:hover {
+      background: #3367d6;
+    }
+
+    #clear-btn {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    #clear-btn:hover {
+      background: #ccc;
+    }
+
+    #search-result {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    #options {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    #options label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #options input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    #tooltip {
+      position: absolute;
+      z-index: 2000;
+      pointer-events: none;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      white-space: nowrap;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="tooltip"></div>
+  <div id="controls">
+    <div id="progress-container">
+      <div id="progress-bar">
+        <div id="progress-fill"></div>
+      </div>
+      <div id="progress-text">読み込み中...</div>
+    </div>
+    <div id="search-panel">
+      <div class="search-row">
+        <span class="search-label">道路名</span>
+        <input type="text" id="search-name" placeholder="例: 東名">
+      </div>
+      <div class="search-row">
+        <span class="search-label">種別</span>
+        <select id="search-fclass">
+          <option value="">未指定</option>
+          <option value="motorway">motorway</option>
+          <option value="trunk">trunk</option>
+          <option value="primary">primary</option>
+          <option value="secondary">secondary</option>
+        </select>
+      </div>
+      <div class="search-row">
+        <span class="search-label">路線番号</span>
+        <input type="text" id="search-ref" placeholder="例: 1">
+      </div>
+      <div class="search-buttons">
+        <button id="search-btn">検索</button>
+        <button id="clear-btn">クリア</button>
+      </div>
+      <div id="search-result"></div>
+    </div>
+    <div id="options">
+      <label>
+        <input type="checkbox" id="show-labels">
+        道路名を表示
+      </label>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
