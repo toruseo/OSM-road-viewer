@@ -4,6 +4,8 @@
  */
 import { MapView } from './MapView.js';
 import pako from 'pako';
+import { marked } from 'marked';
+import helpMd from './help.md?raw';
 
 class App {
   constructor() {
@@ -30,10 +32,50 @@ class App {
     // Setup search
     this.setupSearch();
 
+    // Setup help modal
+    this.setupHelp();
+
     // Load osm.geojson.gz from public folder (gzip compressed)
     await this.loadGeoJSON(import.meta.env.BASE_URL + 'osm.geojson.gz');
 
     console.log('Application ready');
+  }
+
+  /**
+   * Setup help modal functionality
+   */
+  setupHelp() {
+    const helpBtn = document.getElementById('help-btn');
+    const helpModal = document.getElementById('help-modal');
+    const helpClose = document.getElementById('help-close');
+    const helpBody = document.getElementById('help-body');
+
+    // Render markdown content
+    helpBody.innerHTML = marked(helpMd);
+
+    // Open modal
+    helpBtn.addEventListener('click', () => {
+      helpModal.classList.add('visible');
+    });
+
+    // Close modal
+    helpClose.addEventListener('click', () => {
+      helpModal.classList.remove('visible');
+    });
+
+    // Close on backdrop click
+    helpModal.addEventListener('click', (e) => {
+      if (e.target === helpModal) {
+        helpModal.classList.remove('visible');
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && helpModal.classList.contains('visible')) {
+        helpModal.classList.remove('visible');
+      }
+    });
   }
 
   /**
