@@ -71,7 +71,9 @@ class App {
     const helpBody = document.getElementById('help-body');
 
     // Render markdown content
-    helpBody.innerHTML = marked(helpMd);
+    // Convert image paths: public/xxx.png -> BASE_URL/xxx.png for web display
+    const processedMd = helpMd.replace(/\(public\//g, `(${import.meta.env.BASE_URL}`);
+    helpBody.innerHTML = marked(processedMd);
 
     // Open modal
     helpBtn.addEventListener('click', () => {
