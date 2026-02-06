@@ -166,9 +166,10 @@ export class MapView {
     this.map = null;
     this.deckOverlay = null;
     this.currentData = null;
-    this.showLabels = false;
-    this.labelCandidates = [];  // All label candidates (pre-computed)
-    this.labelsData = [];       // Currently visible labels (filtered by viewport)
+    this.showLabels = true;
+    this.labelCandidates = [];      // All label candidates (pre-computed)
+    this.highlightCandidates = [];  // Label candidates for highlighted roads (priority)
+    this.labelsData = [];           // Currently visible labels (filtered by viewport)
     this.tooltip = null;
     this.highlightData = null;
     this._onMoveEnd = null;
@@ -212,6 +213,9 @@ export class MapView {
 
     // Add navigation control
     this.map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    // Add scale bar (metric)
+    this.map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-right');
 
     // Wait for map to load
     await new Promise((resolve) => {
@@ -395,7 +399,12 @@ export class MapView {
     const occupied = new Map();
     const labels = [];
 
-    for (const candidate of this.labelCandidates) {
+    // Process highlight candidates first, then regular candidates
+    const allCandidates = this.highlightCandidates.length > 0
+      ? [...this.highlightCandidates, ...this.labelCandidates]
+      : this.labelCandidates;
+
+    for (const candidate of allCandidates) {
       const [lng, lat] = candidate.position;
 
       // Skip candidates outside the viewport
@@ -440,7 +449,8 @@ export class MapView {
       if (name) {
         const fclass = props?.fclass || '';
         const ref = props?.ref || '';
-        const label = [name, fclass, ref].filter(Boolean).join(' ');
+        const extra = [fclass, ref].filter(Boolean).join(' ');
+        const label = extra ? `${name} (${extra})` : name;
         this.tooltip.style.display = 'block';
         this.tooltip.style.left = `${info.x + 10}px`;
         this.tooltip.style.top = `${info.y + 10}px`;
@@ -546,14 +556,17 @@ export class MapView {
   setHighlight(features) {
     if (!features || features.length === 0) {
       this.highlightData = null;
+      this.highlightCandidates = [];
     } else {
       this.highlightData = {
         type: 'FeatureCollection',
         features: features
       };
+      this.highlightCandidates = generateCandidates(this.highlightData);
       // Fit to highlighted features
       this.fitToData(this.highlightData);
     }
+    this.labelsData = [];
     this.updateLayers();
   }
 
@@ -562,6 +575,8 @@ export class MapView {
    */
   clearHighlight() {
     this.highlightData = null;
+    this.highlightCandidates = [];
+    this.labelsData = [];
     this.updateLayers();
   }
 
