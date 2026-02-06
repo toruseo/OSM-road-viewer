@@ -2,7 +2,7 @@
  * Main Application Entry Point
  * Large-scale GeoJSON WebGL Rendering Application
  */
-import { MapView } from './MapView.js';
+import { MapView, ROAD_STYLES, DEFAULT_ROAD_STYLE } from './MapView.js';
 import pako from 'pako';
 import { marked } from 'marked';
 import helpMd from './help.md?raw';
@@ -35,10 +35,30 @@ class App {
     // Setup help modal
     this.setupHelp();
 
+    // Setup legend styles
+    this.setupLegend();
+
     // Load osm.geojson.gz from public folder (gzip compressed)
     await this.loadGeoJSON(import.meta.env.BASE_URL + 'osm.geojson.gz');
 
     console.log('Application ready');
+  }
+
+  /**
+   * Setup legend styles from ROAD_STYLES
+   */
+  setupLegend() {
+    const legendItems = document.querySelectorAll('#legend .legend-item');
+    legendItems.forEach(item => {
+      const fclass = item.dataset.fclass;
+      const style = ROAD_STYLES[fclass] || DEFAULT_ROAD_STYLE;
+      const line = item.querySelector('.legend-line');
+      if (line) {
+        const [r, g, b] = style.color;
+        line.style.height = `${style.width}px`;
+        line.style.background = `rgb(${r}, ${g}, ${b})`;
+      }
+    });
   }
 
   /**

@@ -93,3 +93,4 @@ nul
 
 .claude/
 *.code-workspace
+vite.config.*.timestamp-*.mjs

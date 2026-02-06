@@ -6,13 +6,40 @@ import { GeoJsonLayer, TextLayer } from '@deck.gl/layers';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 
 // Road styling based on fclass attribute
-const ROAD_STYLES = {
+export const ROAD_STYLES = {
   motorway:  { color: [220, 50, 50, 255],  width: 6 },  // Red, thickest
   trunk:     { color: [50, 100, 220, 255], width: 4 },  // Blue
   primary:   { color: [25, 90, 50, 255], width: 2 },  // Green
   secondary: { color: [25, 90, 50, 255], width: 1 },  // Green, thinnest
 };
-const DEFAULT_STYLE = { color: [128, 128, 128, 255], width: 1 };
+export const DEFAULT_ROAD_STYLE = { color: [128, 128, 128, 255], width: 1 };
+
+// Z-order priority: higher number = drawn later (on top)
+const Z_ORDER = {
+  secondary: 1,
+  primary: 2,
+  trunk: 3,
+  motorway: 4,
+};
+const DEFAULT_Z_ORDER = 0;
+
+/**
+ * Sort features by z-order (lower z-order drawn first, higher on top)
+ */
+function sortByZOrder(geojson) {
+  if (!geojson?.features) return geojson;
+
+  const sortedFeatures = [...geojson.features].sort((a, b) => {
+    const zA = Z_ORDER[a.properties?.fclass] ?? DEFAULT_Z_ORDER;
+    const zB = Z_ORDER[b.properties?.fclass] ?? DEFAULT_Z_ORDER;
+    return zA - zB;
+  });
+
+  return {
+    ...geojson,
+    features: sortedFeatures
+  };
+}
 
 /**
  * Calculate midpoint and angle for a LineString
@@ -203,7 +230,8 @@ export class MapView {
    */
   setData(geojson) {
     console.log('setData called with', geojson?.features?.length || 0, 'features');
-    this.currentData = geojson;
+    // Sort by z-order so motorway (red) is drawn on top
+    this.currentData = sortByZOrder(geojson);
     this.labelsData = []; // Clear cached labels
     this.updateLayers();
 
@@ -235,11 +263,11 @@ export class MapView {
       lineWidthMaxPixels: 20,
       getLineWidth: f => {
         const fclass = f.properties?.fclass;
-        return (ROAD_STYLES[fclass] || DEFAULT_STYLE).width;
+        return (ROAD_STYLES[fclass] || DEFAULT_ROAD_STYLE).width;
       },
       getLineColor: f => {
         const fclass = f.properties?.fclass;
-        return (ROAD_STYLES[fclass] || DEFAULT_STYLE).color;
+        return (ROAD_STYLES[fclass] || DEFAULT_ROAD_STYLE).color;
       },
       // Polygon styling
       getFillColor: [66, 133, 244, 50],
