@@ -35,6 +35,8 @@ OSMを独自軽量化したデータに基づいているので，正確性に�
 
 詳細は[Github](https://github.com/toruseo/road-viewer-finder)の[CLAUDE.md](https://github.com/toruseo/road-viewer-finder/blob/main/CLAUDE.md)を参照してください．
 
+このリポジトリは日本の道路を対象にしていますが，`public/osm.geojson.gz`を別の地域のOSMデータに変更すれば他の地域でも全く同様に使えるはずです．
+
 ## クレジット・ライセンス
 
 開発者：[瀬尾亨（東京科学大学）](https://toruseo.jp/index_jp.html)＋Claude Code等
