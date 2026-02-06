@@ -25,12 +25,19 @@ class App {
 
     // Setup label toggle
     const showLabelsCheckbox = document.getElementById('show-labels');
+    showLabelsCheckbox.checked = localStorage.getItem('show-labels') !== 'false';
+    this.mapView.setLabelsVisible(showLabelsCheckbox.checked);
     showLabelsCheckbox.addEventListener('change', (e) => {
+      localStorage.setItem('show-labels', e.target.checked);
       this.mapView.setLabelsVisible(e.target.checked);
     });
 
     // Toggle LOD override
-    document.getElementById('show-all-roads').addEventListener('change', (e) => {
+    const showAllRoadsCheckbox = document.getElementById('show-all-roads');
+    showAllRoadsCheckbox.checked = localStorage.getItem('show-all-roads') === 'true';
+    this.mapView.forceAllVisible = showAllRoadsCheckbox.checked;
+    showAllRoadsCheckbox.addEventListener('change', (e) => {
+      localStorage.setItem('show-all-roads', e.target.checked);
       this.mapView.forceAllVisible = e.target.checked;
       this.mapView.labelsData = [];
       this.mapView._visibleTierFlags = null;
